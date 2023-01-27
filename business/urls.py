@@ -11,5 +11,6 @@ urlpatterns = [
     path('category/<int:pk>/', SingleCategoryView.as_view()),
     path('commodity/', CommodityView.as_view()),
     path('commodity/<int:pk>/', SingleCommodityView.as_view()),
+    path('predict/',MlDataPredict.as_view())
     
 ]

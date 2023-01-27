@@ -11,27 +11,29 @@ from rest_framework.views import APIView
 
 class BusinessView(CreateAPIView):
     
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     serializer_class = BusinessSerializer
     
     
     
 class WarehouseView(ListCreateAPIView):
     
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     serializer_class = WarehouseSerializer
     
     
     def get_queryset(self):
-        user = self.request.user
+        user = self.request.user.id
+        print(self.request.user)
         business = get_object_or_404(Business, user = user)
+        return WareHouse.objects.all()
         return WareHouse.objects.filter(business = business)
-    
+
     
     
 class SingleWarehouseView(RetrieveUpdateDestroyAPIView):
     
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     serializer_class = WarehouseSerializer
     
     

@@ -1,11 +1,11 @@
 from django.db import models
-
+from hackSNU.models import New_User_Resgistration
 # Create your models here.
 
 
 class Business(models.Model):
     
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(New_User_Resgistration, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     owner_name = models.CharField(max_length=255)
 
@@ -16,7 +16,6 @@ class WareHouse(models.Model):
     max_capacity = models.PositiveBigIntegerField()
     present_capacity = models.PositiveBigIntegerField(default = 0)
     location = models.CharField(max_length=255)
-    
     
     
 class Commodity(models.Model):

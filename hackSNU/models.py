@@ -60,11 +60,15 @@ class New_User_Resgistration(AbstractBaseUser):
         "Does the user have permissions to view the app `app_label`?"
         # Simplest possible answer: Yes, always
         return True
+   
+   
    @property
    def is_staff(self):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+   
+   @property
    def tokens(self):
         refresh=RefreshToken.for_user(self)
         return{
@@ -74,6 +78,8 @@ class New_User_Resgistration(AbstractBaseUser):
    def refresh(self):
         refresh=RefreshToken.for_user(self)
         return str(refresh)
+   
+   
    def access(self):
         refresh = RefreshToken.for_user(self)
         return str(refresh.access_token)

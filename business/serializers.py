@@ -4,9 +4,6 @@ from business.models import *
 from django.shortcuts import get_object_or_404
 
 
-
-
-
 class BusinessSerializer(serializers.ModelSerializer):
     
     class Meta:

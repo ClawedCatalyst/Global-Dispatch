@@ -6,15 +6,18 @@ from django.shortcuts import get_object_or_404
 
 
 
-class BusinessView(CreateAPIView):
+class BusinessView(CreateAPIView, RetrieveAPIView):
     
     permission_classes = [IsAuthenticated]
     serializer_class = BusinessSerializer
     
+    def get_object(self):
+        return get_object_or_404(Business, user = self.request.user)
+    
     def post(self, request, *args, **kwargs):
         request.data.update({"user": self.request.user.id})
         return super().post(request, *args, **kwargs)
-    
+
     
 class WarehouseView(ListCreateAPIView):
     
@@ -72,6 +75,11 @@ class CommodityView(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CommoditySerializer
     
+    
+    
+    def post(self, request, *args, **kwargs):
+        
+        return super().post(request, *args, **kwargs)
     
     def get_queryset(self):
         user = self.request.user

@@ -1,14 +1,23 @@
+from dataclasses import fields
 from rest_framework import serializers, status
 from .models import *
 from business.models import *
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
+from hackSNU.models import *
+from hackSNU.serializers import *
 
 class BusinessSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Business
         fields = "__all__"
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['user'] = NewUserSerializer(instance = instance.user).data
+        print(data)
+        return data
         
 
 class WarehouseSerializer(serializers.ModelSerializer):
@@ -20,7 +29,7 @@ class WarehouseSerializer(serializers.ModelSerializer):
         
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['business'] = BusinessSerializer(instance = instance.business,read_only = True).data
+        data['business'] = BusinessSerializer(instance = instance.business).data
         return data
     
     
@@ -71,4 +80,7 @@ class ShipmentSerializer(serializers.ModelSerializer):
         return data
     
     
+    class Meta:
+        model = New_User_Resgistration
+        fields = ['email','business']
     

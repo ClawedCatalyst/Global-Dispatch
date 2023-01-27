@@ -3,7 +3,7 @@ from business.serializers import *
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from .models import *
 from django.shortcuts import get_object_or_404
-
+from rest_framework.response import Response
 
 
 class BusinessView(CreateAPIView, RetrieveAPIView):
@@ -98,6 +98,51 @@ class SingleCommodityView(RetrieveUpdateDestroyAPIView):
     
     def get_queryset(self):
         return Commodity.objects.all()
+    
+
+class SendShipmentView(ListCreateAPIView):
+    
+    permission_classes = [IsAuthenticated]
+    serializer_class = ShipmentSerializer
+    
+    
+    def get_queryset(self):
+        business = get_object_or_404(Business, user = self.request.user)
+        warehouses = business.warehouse_set.all()
+        queryset = WareHouse.objects.none()
+        for warehouse in warehouses:
+            queryset = queryset.union(warehouse.sent_shipments.all())
+        return queryset
+
+    
+class ReceiveShipmentView(ListCreateAPIView):
+    
+    permission_classes = [IsAuthenticated]
+    serializer_class = ShipmentSerializer
+    
+    
+    def get_queryset(self):
+        business = get_object_or_404(Business, user = self.request.user)
+        warehouses = business.warehouse_set.all()
+        queryset = WareHouse.objects.none()
+        
+        for warehouse in warehouses:
+            queryset = queryset.union(warehouse.received_shipments.all())
+        return queryset
+
+
+
+class SearchShipmentView(views.APIView):
+    
+    def post(self, request, *args, **kwargs):
+        
+        hash = request.data.get('hash')
+        if hash is None:
+            return Response({"detail": "PLease provide the hash for tracking the shipment"})
+
+        shipment = get_object_or_404(Shipment, hash = hash)
+        
+        
         
     
     

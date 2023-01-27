@@ -1,5 +1,8 @@
 from django.db import models
 from hackSNU.models import New_User_Resgistration
+from django.db.models.signals import post_save
+import random, string
+from django.dispatch import receiver
 # Create your models here.
 
 
@@ -30,4 +33,26 @@ class Commodity(models.Model):
     name = models.CharField(max_length=255, unique = True)
     quantity = models.PositiveBigIntegerField()
     volume = models.PositiveBigIntegerField()
+    
+    
+class Shipment(models.Model):
+    
+    source  = models.ForeignKey(WareHouse, on_delete=models.CASCADE, related_name= "sent_shipments")
+    destination  = models.ForeignKey(WareHouse, on_delete=models.CASCADE, related_name= "received_shipments")
+    hash = models.CharField(max_length = 255, blank = True)
+    commodity = models.ForeignKey(Commodity, on_delete=models.CASCADE)
+    quantity = models.PositiveBigIntegerField()
+    
+    
+@receiver(post_save, sender = Shipment)
+
+def set_default_hash(sender, instance, created, **kwargs):
+    
+    if created: 
+        rand = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        instance.hash = rand
+        instance.save()
+    
+    
+    
     

@@ -56,3 +56,19 @@ class CommoditySerializer(serializers.ModelSerializer):
         return commodity
     
         
+        
+class ShipmentSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Shipment
+        fields = "__all__"
+        
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['source'] = WarehouseSerializer(instance.source).data
+        data['destination'] = WarehouseSerializer(instance.destination).data
+        data['commodity'] = CommoditySerializer(instance.commodity).data
+        return data
+    
+    
+    

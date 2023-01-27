@@ -12,4 +12,8 @@ urlpatterns = [
     path('commodity/', CommodityView.as_view()),
     path('commodity/<int:pk>/', SingleCommodityView.as_view()),
     
+    path('shipment/send/', SendShipmentView.as_view()),
+    path('shipment/received/', ReceiveShipmentView.as_view()),
+    path('shipment/search/', SearchShipmentView.as_view()),
+    
 ]

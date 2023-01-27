@@ -13,30 +13,29 @@ class BusinessSerializer(serializers.ModelSerializer):
 
 class WarehouseSerializer(serializers.ModelSerializer):
     
-    business = BusinessSerializer(source = 'business', read_only = True)
     
     class Meta:
         model = WareHouse
         fields = "__all__"
         
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['business'] = BusinessSerializer(instance = instance.business,read_only = True).data
+        return data
     
     
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = "__all__"
+        
+        
 class CommoditySerializer(serializers.ModelSerializer):
-    
-    warehouse = WarehouseSerializer(source = 'warehouse', read_only = True)
     
     class Meta:
         model = Commodity
         fields = "__all__"
-    
-    
-class CategorySerializer(serializers.ModelSerializer):
-    
-    commodity = CommoditySerializer(read_only = True)
-    
-    class Meta:
-        model = Category
-        fields = "__all__"
+        
     
     
         

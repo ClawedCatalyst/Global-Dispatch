@@ -5,7 +5,7 @@ from hackSNU.models import New_User_Resgistration
 
 class Business(models.Model):
     
-    user = models.ForeignKey(New_User_Resgistration, on_delete=models.CASCADE)
+    user = models.OneToOneField(New_User_Resgistration, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     owner_name = models.CharField(max_length=255)
 
@@ -18,16 +18,16 @@ class WareHouse(models.Model):
     location = models.CharField(max_length=255)
     
     
-class Commodity(models.Model):
+class Category(models.Model):
     
-    warehouse = models.ForeignKey(WareHouse, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     
 
-class Category(models.Model):
+class Commodity(models.Model):
     
-    commodity = models.ForeignKey(Commodity, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
+    warehouse = models.ForeignKey(WareHouse, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, unique = True)
     quantity = models.PositiveBigIntegerField()
     volume = models.PositiveBigIntegerField()
     

@@ -65,6 +65,7 @@ class OTPVerifySerializer(serializers.Serializer):
         return validated_data
 
 class NewUserSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = New_User_Resgistration
         fields = ["id", "email", "password"]
@@ -93,14 +94,16 @@ class NewUserSerializer(serializers.ModelSerializer):
                     context
                 )
             return data
+        
+        
     def create(self, data):
-            userOTP = OTP.objects.get(email=data['email'])
-            user = New_User_Resgistration.objects.create(email=data['email'],password=data['password'])
-            user.password = make_password(data['password'])
-            user.is_active = True
-            user.save()
-            userOTP.delete()
-            return user
+        userOTP = OTP.objects.get(email=data['email'])
+        user = New_User_Resgistration.objects.create(email=data['email'],password=data['password'])
+        user.password = make_password(data['password'])
+        user.is_active = True
+        user.save()
+        userOTP.delete()
+        return user
         
         
         

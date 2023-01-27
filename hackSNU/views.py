@@ -21,10 +21,19 @@ class Verify_OTP(generics.CreateAPIView):
         return Response({'msg':'Email Verified'}, status=status.HTTP_200_OK)
 
 # Registration API
+
+
 class New_user_registration(generics.CreateAPIView):
+    
     serializer_class = NewUserSerializer
     
     
+    def post(self, request, *args, **kwargs):
+        response =  super().post(request, *args, **kwargs)
+        user = New_User_Resgistration.objects.get(email = response.data['email'])
+        response.data['tokens'] = user.tokens
+        return response
+
     
 class LoginView(APIView):
     

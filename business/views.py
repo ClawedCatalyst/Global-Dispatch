@@ -184,7 +184,8 @@ class WareHouseView(ListAPIView):
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        return WareHouse.objects.filter(business=self.request.data.get('bus'))
+        business = self.request.GET.get('bus')
+        return WareHouse.objects.filter(business=business)
     
     
         

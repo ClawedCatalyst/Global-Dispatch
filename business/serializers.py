@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 from hackSNU.models import *
 from hackSNU.serializers import *
-
+from business.temp import calculate, predict_price
 class BusinessSerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -47,8 +47,8 @@ class CommoditySerializer(serializers.ModelSerializer):
         
     def validate(self, attrs):
         data = super().validate(attrs)
-        warehouse = get_object_or_404(WareHouse, id = data['warehouse'].id)
-        if warehouse.present_capacity + data['quantity']*data['volume'] > warehouse.max_capacity:
+        warehouse = get_object_or_404(WareHouse, id = data['warehouse'])
+        if warehouse.present_capacity + data['quantity'] * data['volume'] > warehouse.max_capacity:
             raise ValidationError("Warehouse overflown")
         return data
         
@@ -72,6 +72,30 @@ class ShipmentSerializer(serializers.ModelSerializer):
         model = Shipment
         fields = "__all__"
         
+        
+    
+    def validate(self, attrs):
+        data =  super().validate(attrs)
+        commodity = get_object_or_404(Commodity, id = data['commodity'].id)
+        
+        if commodity.quantity < data['quantity']:
+            raise ValidationError("You don't have enough quantity in the warehouse")
+        
+        source_location = data['source'].location[-3:]
+        try:
+            destination_location = data['destination'].location[-3:]
+        except KeyError:
+            destination_location = data['destination_country'][-3:]
+        except Exception as e:
+            raise e
+        
+        distance = calculate(source_location, destination_location)
+        print(distance)
+        expected_price = predict_price(data['quantity'],data['commodity'].volume, distance)
+        data['expected_price'] = expected_price
+        return data
+        
+        
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['source'] = WarehouseSerializer(instance.source).data
@@ -80,7 +104,18 @@ class ShipmentSerializer(serializers.ModelSerializer):
         return data
     
     
-    class Meta:
-        model = New_User_Resgistration
-        fields = ['email','business']
+    def create(self, validated_data):
+        shipment = super().create(validated_data)
+        
+        commodity = shipment.commodity
+        commodity.quantity -= shipment.quantity
+        commodity.save()
+        
+        source_warehouse = shipment.source
+        source_warehouse.present_capacity -= shipment.quantity
+        source_warehouse.save()
+        
+        return shipment
+    
+    
     

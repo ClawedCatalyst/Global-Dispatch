@@ -114,7 +114,7 @@ class SingleCommodityView(RetrieveUpdateDestroyAPIView):
         return Commodity.objects.all()
     
 
-class SendShipmentView(ListCreateAPIView):
+class ShipmentView(ListCreateAPIView):
     
     permission_classes = [IsAuthenticated]
     serializer_class = ShipmentSerializer
@@ -126,23 +126,18 @@ class SendShipmentView(ListCreateAPIView):
         queryset = WareHouse.objects.none()
         for warehouse in warehouses:
             queryset = queryset.union(warehouse.sent_shipments.all())
+            
+        for warehouse in warehouses:
+            queryset = queryset.union(warehouse.received_shipments.all())
+        queryset = queryset.order_by('-id')
         return queryset
 
-    
-class ReceiveShipmentView(ListCreateAPIView):
+   
+class SingleShipmentView(RetrieveUpdateDestroyAPIView):
     
     permission_classes = [IsAuthenticated]
     serializer_class = ShipmentSerializer
-    
-    
-    def get_queryset(self):
-        business = get_object_or_404(Business, user = self.request.user)
-        warehouses = business.warehouse_set.all()
-        queryset = WareHouse.objects.none()
-        
-        for warehouse in warehouses:
-            queryset = queryset.union(warehouse.received_shipments.all())
-        return queryset
+    queryset = Shipment.objects.all()
 
 
 
@@ -156,8 +151,8 @@ class SearchShipmentView(views.APIView):
 
         shipment = get_object_or_404(Shipment, hash = hash)
         
+        return Response(ShipmentSerializer(instance = shipment, context = {'request':self.request}).data, status= status.HTTP_200_OK)
         
-
 
 class MlDataPredict(CreateAPIView):
     
@@ -178,6 +173,8 @@ class GetAllBusiness(ListAPIView):
     
     def get_queryset(self):
         return Business.objects.filter().exclude(user=self.request.user.id)
+    
+    
 
 class WareHouseView(ListAPIView):
     serializer_class = WarehouseSerializer

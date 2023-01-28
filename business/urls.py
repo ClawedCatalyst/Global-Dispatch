@@ -14,8 +14,9 @@ urlpatterns = [
     path('commodity/<int:pk>/', SingleCommodityView.as_view()),
     path('predict/',MlDataPredict.as_view()),
     
-    path('shipment/send/', SendShipmentView.as_view()),
-    path('shipment/received/', ReceiveShipmentView.as_view()),
+    path('shipment/', ShipmentView.as_view()),
+    path('shipment/<int:pk>/', SingleShipmentView.as_view()),
+    # path('shipment/received/', ReceiveShipmentView.as_view()),
     path('shipment/search/', SearchShipmentView.as_view()),
     
 ]

@@ -16,7 +16,6 @@ class BusinessSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['user'] = NewUserSerializer(instance = instance.user).data
-        print(data)
         return data
         
 
@@ -90,7 +89,6 @@ class ShipmentSerializer(serializers.ModelSerializer):
             raise e
         
         distance = calculate(source_location, destination_location)
-        print(distance)
         expected_price = predict_price(data['quantity'],data['commodity'].volume, distance)
         data['expected_price'] = expected_price
         return data
@@ -98,11 +96,20 @@ class ShipmentSerializer(serializers.ModelSerializer):
         
     def to_representation(self, instance):
         data = super().to_representation(instance)
+        user =  self.context['request'].user
+        business = get_object_or_404(Business, user = user)
+        warehouses = business.warehouse_set.all()
+        
+        if warehouses.filter(id = instance.source.id).exists():
+            data['send'] = True
+        else:
+            data['send'] = False
+            
         data['source'] = WarehouseSerializer(instance.source).data
         data['destination'] = WarehouseSerializer(instance.destination).data
         data['commodity'] = CommoditySerializer(instance.commodity).data
         return data
-    
+
     
     def create(self, validated_data):
         shipment = super().create(validated_data)

@@ -171,8 +171,20 @@ class MlDataPredict(CreateAPIView):
         p = model.predict(fv)
         
         return Response({'Predicted Price':p})
-    
 
+class GetAllBusiness(ListAPIView):
+    serializer_class = BusinessSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Business.objects.filter().exclude(user=self.request.user.id)
+
+class WareHouseView(ListAPIView):
+    serializer_class = WarehouseSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return WareHouse.objects.filter(business=self.request.data.get('bus'))
     
     
         

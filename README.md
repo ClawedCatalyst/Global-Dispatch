@@ -21,6 +21,7 @@ international shipping.
 
 ## Deployment Links
 - http://20.207.198.132/
+- http://34.126.216.111/  (Deployed on VM provided during Hackathon)
 
 ## Contributors
 - [Dhruv Goyal](https://github.com/dhruv-goyal-10)

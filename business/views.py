@@ -184,7 +184,7 @@ class WareHouseView(ListAPIView):
         business = self.request.GET.get('bus')
         return WareHouse.objects.filter(business=business)
     
-class ShipmentView(ListAPIView):
+class AdminShipmentView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ShipmentSerializer
     

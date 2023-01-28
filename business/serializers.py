@@ -47,7 +47,7 @@ class CommoditySerializer(serializers.ModelSerializer):
         
     def validate(self, attrs):
         data = super().validate(attrs)
-        warehouse = get_object_or_404(WareHouse, id = data['warehouse'])
+        warehouse = get_object_or_404(WareHouse, id = data['warehouse'].id)
         if warehouse.present_capacity + data['quantity'] * data['volume'] > warehouse.max_capacity:
             raise ValidationError("Warehouse overflown")
         return data

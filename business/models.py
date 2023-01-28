@@ -39,16 +39,18 @@ class Commodity(models.Model):
     
 SHIPMENT_STATUS_CHOICES = {
     ('approved', 'approved'),
-    ('not-approved', 'not-approved')
+    ('not-approved', 'not-approved'),
+    ('In-Transit', 'In-Transit'),
+    ('Delivered', 'Delivered')
 }
 class Shipment(models.Model):
     
-    source  = models.ForeignKey(WareHouse, on_delete=models.CASCADE, related_name= "sent_shipments")
+    source  = models.ForeignKey(WareHouse, on_delete=models.CASCADE, related_name= "sent_shipments",null=True,blank=True)
     destination  = models.ForeignKey(WareHouse, on_delete=models.CASCADE, related_name= "received_shipments", blank=True, null = True)
     destination_country = models.CharField(max_length=255, blank = True , null = True)
     hash = models.CharField(max_length = 255, blank = True)
-    commodity = models.ForeignKey(Commodity, on_delete=models.CASCADE)
-    quantity = models.PositiveBigIntegerField()
+    commodity = models.ForeignKey(Commodity, on_delete=models.CASCADE, null=True,blank=True)
+    quantity = models.PositiveBigIntegerField(null=True,blank=True)
     status = models.CharField(max_length = 255, choices = SHIPMENT_STATUS_CHOICES, default = "not-approved")
     expected_price = models.PositiveBigIntegerField(default = 0)
     final_price = models.PositiveBigIntegerField(blank = True, null = True)

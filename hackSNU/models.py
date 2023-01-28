@@ -41,6 +41,7 @@ class New_User_Resgistration(AbstractBaseUser):
         max_length=255,
         unique=True,
         validators=[EmailValidator()])
+   isAdmin = models.BooleanField(default=False)
    is_active = models.BooleanField(default=True)
    is_admin = models.BooleanField(default=False)
 

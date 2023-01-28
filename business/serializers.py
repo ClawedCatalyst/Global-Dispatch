@@ -75,36 +75,40 @@ class ShipmentSerializer(serializers.ModelSerializer):
     
     def validate(self, attrs):
         data =  super().validate(attrs)
-        commodity = get_object_or_404(Commodity, id = data['commodity'].id)
-        
-        if commodity.quantity < data['quantity']:
-            raise ValidationError("You don't have enough quantity in the warehouse")
-        
-        source_location = data['source'].location[-3:]
         try:
-            destination_location = data['destination'].location[-3:]
-        except KeyError:
-            destination_location = data['destination_country'][-3:]
-        except Exception as e:
-            raise e
+            commodity = get_object_or_404(Commodity, id = data['commodity'].id)
         
-        distance = calculate(source_location, destination_location)
-        expected_price = predict_price(data['quantity'],data['commodity'].volume, distance)
-        data['expected_price'] = expected_price
+            if commodity.quantity < data['quantity']:
+                raise ValidationError("You don't have enough quantity in the warehouse")
+            source_location = data['source'].location[-3:]
+            try:
+                destination_location = data['destination'].location[-3:]
+            except KeyError:
+                destination_location = data['destination_country'][-3:]
+            except Exception as e:
+                raise e
+        
+            distance = calculate(source_location, destination_location)
+            expected_price = predict_price(data['quantity'],data['commodity'].volume, distance)
+            data['expected_price'] = expected_price
+        except:
+            pass
         return data
         
         
     def to_representation(self, instance):
-        data = super().to_representation(instance)
-        user =  self.context['request'].user
-        business = get_object_or_404(Business, user = user)
-        warehouses = business.warehouse_set.all()
-        
-        if warehouses.filter(id = instance.source.id).exists():
-            data['send'] = True
-        else:
-            data['send'] = False
+        try:
+            data = super().to_representation(instance)
+            user =  self.context['request'].user
+            business = get_object_or_404(Business, user = user)
+            warehouses = business.warehouse_set.all()
             
+            if warehouses.filter(id = instance.source.id).exists():
+                data['send'] = True
+            else:
+                data['send'] = False
+        except:
+            pass
         data['source'] = WarehouseSerializer(instance.source).data
         data['destination'] = WarehouseSerializer(instance.destination).data
         data['commodity'] = CommoditySerializer(instance.commodity).data

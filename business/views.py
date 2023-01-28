@@ -184,10 +184,64 @@ class WareHouseView(ListAPIView):
         business = self.request.GET.get('bus')
         return WareHouse.objects.filter(business=business)
     
+class ShipmentView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ShipmentSerializer
     
-        
+    def get(self,request):
+        if request.user.isAdmin == True:
+            shipment = Shipment.objects.all().order_by('-id')
+            serializer = self.serializer_class(shipment,many=True)
+            return Response(serializer.data)
+        return Response({'msg':'Not Admin'})
+
+class ShipmentApproval(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ShipmentSerializer
     
+    def get(self,request):
+        if request.user.isAdmin == True:
+            shipment = Shipment.objects.filter().exclude(status='approved').order_by('-id')
+            serializer = self.serializer_class(shipment,many=True)
+            return Response(serializer.data)
+        return Response({'msg':'Not Admin'})
     
+    def put(self,request):
+        if request.user.isAdmin == True:
+            shipment = Shipment.objects.get(id=request.data.get('shipID'))
+            if shipment.status == 'Approved':
+                return Response({'msg':'Shipment is Approved'})
+            else:
+                serializer = self.serializer_class(instance=shipment, data = request.data)
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+                    print(serializer.data['destination'])
+                    if  serializer.data['destination_country'] != 'nothing':
+                        shipment.destination = None
+                        shipment.save()
+                    if  serializer.data['destination']['location'] != '':
+                        shipment.destination_country = None
+                        shipment.save()
+                    source_location = shipment.source.location[-3:]
+                    try:
+                        destination_location = shipment.destination.location[-3:]
+                    except:
+                       pass
+                    try:
+                        destination_location = serializer.data['destination_country'][-3:]
+                    except:
+                           pass   
+                     
+                    try:
+                        distance = calculate(source_location, destination_location)
+                        expected_price = predict_price(shipment.quantity,shipment.commodity.volume, distance)
+                        shipment.expected_price = expected_price
+                        shipment.save()
+                    except:
+                        pass
+                    serializer = self.serializer_class(shipment,many=False)
+                    return Response(serializer.data)
+
 
         
     

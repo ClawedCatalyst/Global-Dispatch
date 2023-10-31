@@ -1,4 +1,4 @@
-# SNU-hack
+# Global-Dispatch
 
 Global Dispatch is the one-stop solution for handling warehousing
 and supply chain management problems of the various parties involved in
@@ -17,11 +17,12 @@ international shipping.
 - Used Gunicorn as Forward Proxy
 - Nginx for Reverse Proxy
 
+## Prototype
 
+<img width="1224" alt="image" src="https://github.com/ClawedCatalyst/Global-Dispatch/assets/97229491/38e7e814-c1ea-4cf1-94f5-ac6149c2088e">
+<img width="1295" alt="image" src="https://github.com/ClawedCatalyst/Global-Dispatch/assets/97229491/7e28e433-528c-485e-95b9-adbfc0d6ab38">
+<img width="1253" alt="image" src="https://github.com/ClawedCatalyst/Global-Dispatch/assets/97229491/9952e276-78da-44ee-ac3c-358a47053e14">
 
-## Deployment Links
-- http://20.207.198.132/
-- http://34.126.216.111/  (Deployed on VM provided during Hackathon)
 
 ## Contributors
 - [Dhruv Goyal](https://github.com/dhruv-goyal-10)
